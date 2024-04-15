@@ -104,51 +104,26 @@ def web_traffic(short_url):
 
 import json
 from datetime import datetime, timezone
+from dateutil import parser
 
 def domain_age(domain):
     url = domain.split("//")[-1].split("/")[0].split('?')[0]
-    show = "https://www.whoisxmlapi.com/whoisserver/WhoisService?apiKey=at_bleAXcaGeYA8lZlgorjZQ4WRkYA3K&domainName=" + url + "&outputFormat=JSON"
-
-    def convert_to_datetime(date_str):
-        # List of formats your API might use
-        date_formats = [
-            "%a %b %d %Y", # Format for 'Tue Mar 3 2015'
-            "%Y-%m-%dT%H:%M:%SZ", # Format for '2018-02-16T10:22:31Z'
-            # Add more formats here as needed
-        ]
-        
-        for fmt in date_formats:
-            try:
-                # Try to parse the date string with the current format
-                return datetime.strptime(date_str, fmt)
-            except ValueError:
-                # If parsing fails, continue to the next format
-                continue
-        
-        # If none of the formats work, raise an exception or return None
-            
-        raise ValueError(f"Date format not recognized: {date_str}")
-    
-    r = requests.get(show)
-    if r.status_code == 200:
-        data = r.text
-        jsonToPython = json.loads(data)
-        result = jsonToPython['WhoisRecord']['registryData']
-        if result == None:
-            return -2
-        else:
-            start = result['createdDate']
-            date_obj = convert_to_datetime(start)
-
-            # Get the current date and time as a datetime object
-            current_date = datetime.now()
-
-            # Calculate the difference in days
-            difference = current_date - date_obj
-            difference_days = difference.days
-            return difference_days
-    else:       
-        return -1
+    try:
+        domain_info = whois.whois(domain)
+        creation_date = domain_info.creation_date
+        # Handle cases where the creation date could be a list
+        if isinstance(creation_date, list):
+            creation_date = creation_date[0]
+        # Ensure the creation date is in datetime format
+        if type(creation_date) is not datetime:
+            creation_date = parser.parse(str(creation_date))
+        # Calculate age in days
+        now = datetime.now()
+        age_days = (now - creation_date).days
+        return age_days
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 
 #################################################################################################################################

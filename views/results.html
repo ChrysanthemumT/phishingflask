@@ -1,1 +1,5 @@
-<p>The prediction result is: {{ prediction }}</p>
+{% if not prediction %}
+    <p>The link provided is not reachable!</p>
+{% else %}
+    <p>The prediction result is: {{ prediction }}</p>
+{% endif %}

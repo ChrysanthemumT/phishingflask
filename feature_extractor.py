@@ -24,7 +24,7 @@ import re
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
-key = 'Add your OPR API key here'
+key = 'w004ogwsgs8g4g880o0cwwo4og8okskoc0s0ggc8 '
 
 import signal
 

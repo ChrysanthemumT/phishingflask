@@ -7,6 +7,7 @@ import xgboost as xgb
 import pandas as pd
 import numpy as np
 from feature_extractor import extract_features
+from pickle import load
 
 
 app = Flask(__name__, template_folder='views')
@@ -17,7 +18,7 @@ params = {
     'eval_metric': 'error'
 }
 
-scaler = StandardScaler()
+scaler = load(open('scaler.pkl', 'rb'))
 xgb = xgb.XGBClassifier(**params)
 xgb.load_model("./xgboost_model.json")
 
@@ -31,10 +32,13 @@ def predict():
     text_input = data['text']
     print(text_input)
     text_features = []
-    text_features.append(extract_features(text_input, "Legitimate"))
+    x = extract_features(text_input, "DUMMY")
+    if not x:
+        return render_template('results.html', prediction=None)
+    x = x[1:-1]     #remove url and status column
+    text_features.append(x)
     print(text_features)
-    text_features[0] = text_features[0][1:-1]
-    text_features = scaler.fit_transform(text_features)
+    text_features = scaler.transform(text_features)
     prediction = xgb.predict(text_features)
     print(prediction[0])
     #return jsonify({'prediction': int(prediction[1])})
