@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 from feature_extractor import extract_features
 from pickle import load
+import shap
 
 
 app = Flask(__name__, template_folder='views')
@@ -21,6 +22,7 @@ params = {
 scaler = load(open('scaler.pkl', 'rb'))
 xgb = xgb.XGBClassifier(**params)
 xgb.load_model("./xgboost_model.json")
+feature_names = pd.read_csv("dataset_B_05_2020.csv").columns.tolist()
 
 @app.route('/')
 def index():
@@ -41,7 +43,24 @@ def predict():
     text_features = scaler.transform(text_features)
     prediction = xgb.predict(text_features)
     print(prediction[0])
-    #return jsonify({'prediction': int(prediction[1])})
+
+    # view SHAP of test data
+    explainer = shap.TreeExplainer(xgb, feature_names=feature_names)
+    print(feature_names)
+    shap_values = explainer(text_features)
+
+    # analyze SHAP of features for first test sample
+    val = shap_values[0].values
+
+    # get indices of features with top 5 SHAP values
+    ind = np.argpartition(val, -5)[-5:]
+    ind = ind[np.argsort(val[ind])]
+
+    # convert indices into feature names - can be displayed, after some
+    # further processing, to the user
+    #top_5_features = feature_names[ind]
+    top_5_values = val[ind]
+    #print(top_5_features)
     if prediction[0] == 1:
         result = "Phishing"
     else:
