@@ -45,27 +45,35 @@ def predict():
     print(prediction[0])
 
     # view SHAP of test data
-    explainer = shap.TreeExplainer(xgb, feature_names=feature_names)
-    print(feature_names)
+    explainer = shap.TreeExplainer(xgb, feature_names=feature_names[0:-1])
     shap_values = explainer(text_features)
 
     # analyze SHAP of features for first test sample
     val = shap_values[0].values
+    print("val:\n")
+    print(val)
 
     # get indices of features with top 5 SHAP values
     ind = np.argpartition(val, -5)[-5:]
     ind = ind[np.argsort(val[ind])]
+    print("ind:\n")
+    print(ind)
 
     # convert indices into feature names - can be displayed, after some
     # further processing, to the user
-    #top_5_features = feature_names[ind]
-    top_5_values = val[ind]
-    #print(top_5_features)
+    # Initialize an empty list to store the top feature names
+    top_5_features = []
+
+    # Loop through the indices in 'ind' and select the corresponding feature names
+    for index in ind:
+        top_5_features.append(feature_names[index])
+    #top_5_values = val[ind]
+    print(top_5_features)
     if prediction[0] == 1:
         result = "Phishing"
     else:
         result = "Legitimate"
-    return render_template('results.html', prediction=result)
+    return render_template('results.html', prediction=result, top_features=top_5_features)
 
 # Run the application
 if __name__ == '__main__':

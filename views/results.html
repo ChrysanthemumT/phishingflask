@@ -2,4 +2,12 @@
     <p>The link provided is not reachable!</p>
 {% else %}
     <p>The prediction result is: {{ prediction }}</p>
+    {% if top_features %}
+        <p>Top 5 features:</p>
+        <div class="flex-container">
+            {% for feature in top_features %}
+                <div class="flex-item">{{ feature }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endif %}
