@@ -25,10 +25,10 @@ import seaborn as sns
 output = Xdf.corr()
 print(Xdf.shape)
 print(output)
-plt.figure(figsize=(16, 14))
+plt.figure(figsize=(20, 18))
 sns.heatmap(output.astype(float), annot=True, cmap='coolwarm', fmt=".2f", annot_kws={"size": 3})
 plt.title('Correlation Table')
-output_file = "correlation_plot.pdf"
+output_file = "correlation_plot.png"
 plt.savefig(output_file, format='pdf', bbox_inches='tight')
 plt.close()
 
@@ -48,7 +48,7 @@ def calculate_chi2_p_values(df):
     return pd.DataFrame(p_values, index=df.columns, columns=df.columns)
 
 def plot_chi2_p_values(p_values, output_file=None):
-    plt.figure(figsize=(16, 14))
+    plt.figure(figsize=(20, 18))
     sns.heatmap(p_values, cmap='coolwarm', annot=True, fmt=".2f", annot_kws={"size": 3})
     plt.title('Chi-Square Test P-Values for Each Column Pair')
     plt.xlabel('Column Index')
@@ -59,7 +59,7 @@ def plot_chi2_p_values(p_values, output_file=None):
 chisq_test = calculate_chi2_p_values(Xdf)
 
 # Save and/or plot Chi-Square test p-values
-output_file = "chi2_p_values_plot.pdf"
+output_file = "chi2_p_values_plot.png"
 plot_chi2_p_values(chisq_test, output_file=output_file)
 
 def calculate_fisher_exact_p_values(df):
@@ -81,7 +81,7 @@ def calculate_fisher_exact_p_values(df):
     return pd.DataFrame(p_values, index=df.columns, columns=df.columns)
 
 def plot_fisher_p_values(p_values, output_file=None):
-    plt.figure(figsize=(16, 14))
+    plt.figure(figsize=(20, 18))
     sns.heatmap(p_values, cmap='coolwarm', annot=True, fmt=".2f", annot_kws={"size": 3})
     plt.title('Fisher Exact Test P-Values for Each Column Pair')
     plt.xlabel('Column Index')
@@ -92,4 +92,4 @@ def plot_fisher_p_values(p_values, output_file=None):
 p_values_fisher = calculate_fisher_exact_p_values(Xdf)
 
 # Plot Fisher's exact test p-values
-plot_fisher_p_values(p_values_fisher, "fischer_output.pdf")
+plot_fisher_p_values(p_values_fisher, "fischer_output.png")

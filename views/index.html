@@ -9,12 +9,20 @@
     </head>
     <body>
     <h2>XGBoost Prediction</h2>
-    <form hx-post="/predict" hx-target="#prediction-result" hx-swap="innerHTML" hx-indicator="#loading-spinner">
+    <form id="prediction-form" hx-post="/predict" hx-target="#prediction-result" hx-swap="innerHTML" 
+        hx-indicator="#loading-spinner">
         <input type="text" id="text-input" name="text"><br><br>
         <button type="submit">Predict</button>
     </form>
-    <div id="prediction-result">
+    <div id="prediction-container">
         <img id="loading-spinner" class="htmx-indicator" src="{{ url_for('static', filename='Walk.gif') }}" alt="Loading..." />
+        <div id="prediction-result">
+        </div>
     </div>
+    <script>
+        document.getElementById("prediction-form").addEventListener("submit", function() {
+        document.getElementById("prediction-result").innerHTML = ""; // Clear previous prediction
+    });
+</script>
     </body>
 </html>
