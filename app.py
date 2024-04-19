@@ -20,7 +20,7 @@ params = {
     # 'eval_metric': 'error'
 }
 
-scaler = load(open('scaler.pkl', 'rb'))
+scaler = load(open('scaler2.pkl', 'rb'))
 xgb = xgb.XGBClassifier(**params)
 xgb.load_model("./xgb_model2.json")
 feature_names = pd.read_csv("dataset_B_05_2020.csv").columns.tolist()
@@ -46,7 +46,7 @@ def predict():
     text_features.append(x)
     # print(text_features)
 
-    # text_features = scaler.transform(text_features)
+    text_features = scaler.transform(text_features)
     prediction = xgb.predict(text_features)
     print(prediction[0])
 
