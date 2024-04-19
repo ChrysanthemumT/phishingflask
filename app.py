@@ -1,3 +1,4 @@
+import time
 from flask import Flask, request, jsonify, render_template
 import matplotlib.pyplot as plt
 from sklearn.model_selection import cross_validate, cross_val_predict
@@ -14,14 +15,14 @@ import shap
 app = Flask(__name__, template_folder='views')
 
 params = {
-    'max_depth': 3,
+    'max_depth': 6,
     'objective': 'reg:logistic',
-    'eval_metric': 'error'
+    # 'eval_metric': 'error'
 }
 
 scaler = load(open('scaler.pkl', 'rb'))
 xgb = xgb.XGBClassifier(**params)
-xgb.load_model("./xgboost_model.json")
+xgb.load_model("./xgb_model2.json")
 feature_names = pd.read_csv("dataset_B_05_2020.csv").columns.tolist()
 
 @app.route('/')
@@ -34,13 +35,18 @@ def predict():
     text_input = data['text']
     print(text_input)
     text_features = []
+    print("Started timing!:")
+    timenow = time.time()
     x = extract_features(text_input, "DUMMY")
+    timeend = time.time()
+    print("Time taken for feature extractions", timeend-timenow)
     if not x:
         return render_template('results.html', prediction=None)
     x = x[1:-1]     #remove url and status column
     text_features.append(x)
-    print(text_features)
-    text_features = scaler.transform(text_features)
+    # print(text_features)
+
+    # text_features = scaler.transform(text_features)
     prediction = xgb.predict(text_features)
     print(prediction[0])
 
